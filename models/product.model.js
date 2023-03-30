@@ -1,11 +1,8 @@
 import mongoose from 'mongoose';
+import slug from 'mongoose-slug-generator';
+mongoose.plugin(slug);
 
 const COLLECTION_NAME = 'Products';
-
-const STATUS = {
-    OUTSTOCK: 'outstock',
-    INSTOCK: 'instock',
-};
 
 const ProductSchema = new mongoose.Schema(
     {
@@ -13,7 +10,15 @@ const ProductSchema = new mongoose.Schema(
             type: String,
             required: true,
         },
+        slug: {
+            type: String,
+            slug: 'name',
+        },
         image: {
+            type: String,
+            required: true,
+        },
+        type: {
             type: String,
             required: true,
         },
@@ -21,20 +26,11 @@ const ProductSchema = new mongoose.Schema(
             type: Number,
             required: true,
         },
-        price_stock: {
+        price_market: {
             type: Number,
             required: true,
         },
-
-        code: {
-            type: String,
-            required: true,
-        },
-        branch: {
-            type: String,
-            required: true,
-        },
-        status: {
+        brand: {
             type: String,
             required: true,
         },
@@ -53,13 +49,7 @@ const ProductSchema = new mongoose.Schema(
             },
         },
         stores: {
-            type: [],
-            store_name: {
-                type: String,
-            },
-            quantity: {
-                type: Number,
-            },
+            type: [String],
         },
         description: {
             type: String,
@@ -71,6 +61,7 @@ const ProductSchema = new mongoose.Schema(
     }
 );
 
+// index
 const ProductModel = mongoose.model('Product', ProductSchema);
 
 export default ProductModel;

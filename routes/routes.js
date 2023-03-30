@@ -7,12 +7,20 @@ import ProductController from '../controllers/product.controller.js';
 const router = express.Router();
 
 const AdminAPIRoute = (app) => {
-    router.post('/product/add-product', ProductController.addProduct);
+    router.get('/product/get-all-product', ProductController.getAllProduct);
+    router.get('/product/get-product/:slug', ProductController.getProduct);
 
     router.post('/auth/register', AuthController.signUp);
     router.post('/auth/login', AuthController.signIn);
 
     router.use(authenticate);
+
+    router.post('/product/add-product', ProductController.addProduct);
+    router.put('/product/update-product/:id', ProductController.updateProduct);
+    router.delete(
+        '/product/delete-product/:id',
+        ProductController.deleteProduct
+    );
 
     router.post('/auth/logout', AuthController.signOut);
     router.post('/auth/refresh-token', AuthController.refreshToken);

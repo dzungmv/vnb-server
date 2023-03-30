@@ -4,14 +4,23 @@ const COLLECTION_NAME = 'Users';
 
 const UserSchema = new mongoose.Schema(
     {
-        username: {
+        name: {
             type: String,
             required: true,
+            unique: true,
         },
         email: {
             type: String,
             require: true,
             unique: true,
+        },
+        password: {
+            type: String,
+            require: true,
+        },
+        role: {
+            type: String,
+            require: true,
         },
     },
     {

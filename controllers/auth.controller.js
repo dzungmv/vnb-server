@@ -1,4 +1,5 @@
 import bcrypt from 'bcrypt';
+import { log } from 'console';
 import crypto from 'crypto';
 
 import { createTokenPair } from '../auth/authUtils.js';
@@ -12,10 +13,13 @@ import {
 
 import { findByEmail } from '../services/user.service.js';
 
+const ROLE = {
+    ADMIN: 'admin',
+    USER: 'user',
+};
+
 const signUp = async (req, res) => {
     const { email, name, password } = req.body;
-
-    console.log(req.body);
 
     try {
         const holderEmail = await UserModel.findOne({ email }).lean();
@@ -32,6 +36,7 @@ const signUp = async (req, res) => {
             email,
             name,
             password: passHash,
+            role: ROLE.USER,
         });
 
         if (user) {
@@ -71,6 +76,7 @@ const signUp = async (req, res) => {
             metadata: null,
         });
     } catch (error) {
+        console.error(error);
         return res.status(500).json({
             message: 'Internal server error',
         });
@@ -82,6 +88,8 @@ const signIn = async (req, res) => {
 
     try {
         const findUser = await findByEmail({ email });
+
+        console.log(findUser);
 
         if (!findUser) {
             return res.status(401).json({
@@ -122,6 +130,7 @@ const signIn = async (req, res) => {
                     id: findUser._id,
                     name: findUser.name,
                     email: findUser.email,
+                    role: findUser.role,
                 },
                 tokens,
             },
