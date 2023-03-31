@@ -22,6 +22,8 @@ const AdminAPIRoute = (app) => {
         ProductController.deleteProduct
     );
 
+    router.post('/auth/send-otp', AuthController.sendOTP);
+    router.post('/auth/verify-account', AuthController.verifyAccount);
     router.post('/auth/logout', AuthController.signOut);
     router.post('/auth/refresh-token', AuthController.refreshToken);
 

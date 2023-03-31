@@ -33,6 +33,7 @@ const createTokenPair = async (payload, publicKey, privateKey) => {
 };
 
 const authenticate = asyncHandler(async (req, res, next) => {
+    console.log('req', req.headers);
     try {
         const userId = req.headers[HEADERS.CLIENT_ID];
         if (!userId) {

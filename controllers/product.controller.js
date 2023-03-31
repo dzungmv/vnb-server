@@ -7,7 +7,6 @@ import {
 } from '../services/product.service.js';
 
 const addProduct = async (req, res) => {
-    console.log(req.body);
     try {
         const newProduct = await ProductModel.create({
             ...req.body,

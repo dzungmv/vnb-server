@@ -22,6 +22,10 @@ const UserSchema = new mongoose.Schema(
             type: String,
             require: true,
         },
+        verified: {
+            type: Boolean,
+            default: false,
+        },
     },
     {
         collection: COLLECTION_NAME,

@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt';
-import { log } from 'console';
 import crypto from 'crypto';
+import otpGenerator from 'otp-generator';
 
 import { createTokenPair } from '../auth/authUtils.js';
 import UserModel from '../models/user.model.js';
@@ -10,8 +10,10 @@ import {
     removeById,
     updateRefreshToken,
 } from '../services/keyToken.service.js';
+import { findOTPByEmail, insertOTP } from '../services/otp.service.js';
 
-import { findByEmail } from '../services/user.service.js';
+import { findByEmail, verifyByEmail } from '../services/user.service.js';
+import { sendEmail } from '../utils/mailer.js';
 
 const ROLE = {
     ADMIN: 'admin',
@@ -89,8 +91,6 @@ const signIn = async (req, res) => {
     try {
         const findUser = await findByEmail({ email });
 
-        console.log(findUser);
-
         if (!findUser) {
             return res.status(401).json({
                 message: 'User not registered!',
@@ -144,6 +144,7 @@ const signIn = async (req, res) => {
 };
 
 const signOut = async (req, res) => {
+    console.log(req);
     const delKey = await removeById(req.keyStore._id);
 
     return res.status(200).json({
@@ -211,9 +212,106 @@ const refreshToken = async (req, res) => {
     }
 };
 
+const sendOTP = async (req, res) => {
+    const { email } = req.body;
+
+    try {
+        const OTP = otpGenerator.generate(6, {
+            digits: true,
+            upperCaseAlphabets: false,
+            lowerCaseAlphabets: false,
+            specialChars: false,
+        });
+
+        await insertOTP({ otp: OTP, email });
+
+        await sendEmail({
+            to: email,
+            subject: 'Verify your email',
+            htmlContent: `<div style="font-family: Helvetica,Arial,sans-serif;min-width:1000px;overflow:auto;line-height:2">
+            <div style="margin:50px auto;width:70%;padding:20px 0">
+              <div style="border-bottom:1px solid #eee">
+                <a href="" style="font-size:1.4em;color: #ff0050;text-decoration:none;font-weight:600">VNB Shop</a>
+              </div>
+              <p style="font-size:1.1em">Hi,</p>
+              <p>Thank you for choosing VNB. Use the following OTP to complete your verify account. OTP is valid for 60 seconds.</p>
+              <h2 style="background: #ff0050;margin: 0 auto;width: max-content;padding: 0 10px;color: #fff;border-radius: 4px;">${OTP}</h2>
+              <p style="font-size:0.9em;">Regards,<br />VNB Shop</p>
+              <hr style="border:none;border-top:1px solid #eee" />
+              <div style="float:right;padding:8px 0;color:#aaa;font-size:0.8em;line-height:1;font-weight:300">
+                <p>VNB Shop Inc</p>
+                <p>Ho Chi Minh City</p>
+              </div>
+            </div>
+          </div>`,
+        });
+
+        return res.status(200).json({
+            message: 'Send OTP successfully!',
+        });
+    } catch (error) {
+        return res.status(500).json({
+            message: 'Internal server error!',
+        });
+    }
+};
+
+const verifyAccount = async (req, res) => {
+    const { email, otp } = req.body;
+
+    try {
+        const findOTP = await findOTPByEmail({ email });
+
+        if (!findOTP) {
+            return res.status(401).json({
+                message: 'OTP is invalid 1!',
+            });
+        }
+
+        const findUser = await findByEmail({ email });
+
+        if (!findUser) {
+            return res.status(401).json({
+                message: 'User not registered!',
+            });
+        }
+
+        if (findUser.verified) {
+            return res.status(401).json({
+                message: 'User is verified!',
+            });
+        }
+
+        const OTP = findOTP.otp;
+
+        const isMatch = await bcrypt.compare(otp, OTP);
+
+        if (!isMatch) {
+            return res.status(401).json({
+                message: 'OTP is invalid 2!',
+            });
+        }
+
+        const verify = await verifyByEmail({ email });
+
+        return res.status(200).json({
+            message: 'Verify account successfully!',
+            metadata: {
+                verify,
+            },
+        });
+    } catch (error) {
+        return res.status(500).json({
+            message: 'Internal server error!',
+        });
+    }
+};
+
 export default {
     signUp,
     signIn,
     signOut,
     refreshToken,
+    sendOTP,
+    verifyAccount,
 };

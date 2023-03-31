@@ -9,9 +9,22 @@ const findByEmail = async ({
         password: 1,
         email: 1,
         role: 1,
+        verified: 1,
     },
 }) => {
     return await UserModel.findOne({ email }).select(select).lean();
 };
 
-export { findByEmail };
+const verifyByEmail = async (email) => {
+    return await UserModel.findOneAndUpdate(
+        email,
+        {
+            verified: true,
+        },
+        {
+            new: true,
+        }
+    );
+};
+
+export { findByEmail, verifyByEmail };
