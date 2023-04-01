@@ -127,10 +127,11 @@ const signIn = async (req, res) => {
             message: 'Login successfully!',
             metadata: {
                 user: {
-                    id: findUser._id,
+                    _id: findUser._id,
                     name: findUser.name,
                     email: findUser.email,
                     role: findUser.role,
+                    verified: findUser.verified,
                 },
                 tokens,
             },
@@ -250,8 +251,9 @@ const sendOTP = async (req, res) => {
             message: 'Send OTP successfully!',
         });
     } catch (error) {
+        console.error('Error', error);
         return res.status(500).json({
-            message: 'Internal server error!',
+            message: 'Internal server error hehe!',
         });
     }
 };

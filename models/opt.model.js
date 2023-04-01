@@ -15,7 +15,7 @@ const OTPSchema = new mongoose.Schema(
         time: {
             type: Date,
             default: Date.now,
-            index: { expires: '1d' },
+            index: { expires: '60' },
         },
     },
     {
