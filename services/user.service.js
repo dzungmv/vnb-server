@@ -27,4 +27,18 @@ const verifyByEmail = async (email) => {
     );
 };
 
-export { findByEmail, verifyByEmail };
+const updatePassword = async (email, password) => {
+    return await UserModel.findOneAndUpdate(
+        {
+            email: email,
+        },
+        {
+            password: password,
+        },
+        {
+            new: true,
+        }
+    );
+};
+
+export { findByEmail, verifyByEmail, updatePassword };

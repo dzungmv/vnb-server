@@ -11,7 +11,11 @@ const insertOTP = async ({ otp, email }) => {
 };
 
 const findOTPByEmail = async ({ email }) => {
-    return await OTPModel.findOne({ email }).lean();
+    return await OTPModel.find({ email }).lean();
 };
 
-export { insertOTP, findOTPByEmail };
+const deleteOTPByEmail = async ({ email }) => {
+    return await OTPModel.findOneAndDelete({ email });
+};
+
+export { insertOTP, findOTPByEmail, deleteOTPByEmail };

@@ -12,6 +12,8 @@ const AdminAPIRoute = (app) => {
 
     router.post('/auth/register', AuthController.signUp);
     router.post('/auth/login', AuthController.signIn);
+    router.post('/auth/forgot-password', AuthController.forgotPassword);
+    router.post('/auth/reset-password', AuthController.resetPassword);
 
     router.use(authenticate);
 
@@ -24,6 +26,7 @@ const AdminAPIRoute = (app) => {
 
     router.post('/auth/send-otp', AuthController.sendOTP);
     router.post('/auth/verify-account', AuthController.verifyAccount);
+    router.post('/auth/change-password', AuthController.changePassword);
     router.post('/auth/logout', AuthController.signOut);
     router.post('/auth/refresh-token', AuthController.refreshToken);
 

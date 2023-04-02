@@ -10,9 +10,17 @@ import {
     removeById,
     updateRefreshToken,
 } from '../services/keyToken.service.js';
-import { findOTPByEmail, insertOTP } from '../services/otp.service.js';
+import {
+    deleteOTPByEmail,
+    findOTPByEmail,
+    insertOTP,
+} from '../services/otp.service.js';
 
-import { findByEmail, verifyByEmail } from '../services/user.service.js';
+import {
+    findByEmail,
+    verifyByEmail,
+    updatePassword,
+} from '../services/user.service.js';
 import { sendEmail } from '../utils/mailer.js';
 
 const ROLE = {
@@ -145,7 +153,6 @@ const signIn = async (req, res) => {
 };
 
 const signOut = async (req, res) => {
-    console.log(req);
     const delKey = await removeById(req.keyStore._id);
 
     return res.status(200).json({
@@ -251,9 +258,109 @@ const sendOTP = async (req, res) => {
             message: 'Send OTP successfully!',
         });
     } catch (error) {
-        console.error('Error', error);
         return res.status(500).json({
-            message: 'Internal server error hehe!',
+            message: 'Internal server error!',
+        });
+    }
+};
+
+const forgotPassword = async (req, res) => {
+    const { email } = req.body;
+
+    try {
+        const findUser = await findByEmail({ email });
+
+        if (!findUser) {
+            return res.status(404).json({
+                message: 'User not found!',
+            });
+        }
+
+        const OTP = otpGenerator.generate(6, {
+            digits: true,
+            upperCaseAlphabets: false,
+            lowerCaseAlphabets: false,
+            specialChars: false,
+        });
+
+        await insertOTP({ otp: OTP, email });
+
+        await sendEmail({
+            to: email,
+            subject: 'Reset password',
+            htmlContent: `<div style="font-family: Helvetica,Arial,sans-serif;min-width:1000px;overflow:auto;line-height:2">
+            <div style="margin:50px auto;width:70%;padding:20px 0">
+              <div style="border-bottom:1px solid #eee">
+                <a href="" style="font-size:1.4em;color: #ff0050;text-decoration:none;font-weight:600">VNB Shop</a>
+              </div>
+              <p style="font-size:1.1em">Hi,</p>
+              <p>Use the following OTP to reset your password. OTP is valid for 60 seconds.</p>
+              <h2 style="background: #ff0050;margin: 0 auto;width: max-content;padding: 0 10px;color: #fff;border-radius: 4px;">${OTP}</h2>
+              <p style="font-size:0.9em;">Regards,<br />VNB Shop</p>
+              <hr style="border:none;border-top:1px solid #eee" />
+              <div style="float:right;padding:8px 0;color:#aaa;font-size:0.8em;line-height:1;font-weight:300">
+                <p>VNB Shop Inc</p>
+                <p>Ho Chi Minh City</p>
+              </div>
+            </div>
+          </div>`,
+        });
+
+        return res.status(200).json({
+            message: 'Send OTP successfully!',
+        });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({
+            message: 'Internal server error!',
+        });
+    }
+};
+
+const resetPassword = async (req, res) => {
+    const { email, otp, password } = req.body;
+
+    try {
+        const findOTP = await findOTPByEmail({ email });
+
+        if (!findOTP) {
+            return res.status(401).json({
+                message: 'OTP is invalid!',
+            });
+        }
+
+        const findUser = await findByEmail({ email });
+
+        if (!findUser) {
+            return res.status(401).json({
+                message: 'User not registered!',
+            });
+        }
+
+        // get last record of otp
+        const lastOTP = findOTP[findOTP.length - 1];
+        const OTP = lastOTP.otp;
+
+        const isMatch = await bcrypt.compare(otp, OTP);
+
+        if (!isMatch) {
+            return res.status(401).json({
+                message: 'OTP is invalid!',
+            });
+        }
+
+        const salt = await bcrypt.genSalt(10);
+        const hashPassword = await bcrypt.hash(password, salt);
+
+        const test = await updatePassword(email, hashPassword);
+
+        return res.status(200).json({
+            message: 'Reset password successfully!',
+        });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({
+            message: 'Internal server error!',
         });
     }
 };
@@ -284,7 +391,9 @@ const verifyAccount = async (req, res) => {
             });
         }
 
-        const OTP = findOTP.otp;
+        // get last record of otp
+        const lastOTP = findOTP[findOTP.length - 1];
+        const OTP = lastOTP.otp;
 
         const isMatch = await bcrypt.compare(otp, OTP);
 
@@ -296,6 +405,8 @@ const verifyAccount = async (req, res) => {
 
         const verify = await verifyByEmail({ email });
 
+        await deleteOTPByEmail({ email });
+
         return res.status(200).json({
             message: 'Verify account successfully!',
             metadata: {
@@ -303,8 +414,26 @@ const verifyAccount = async (req, res) => {
             },
         });
     } catch (error) {
+        console.error('Error', error);
         return res.status(500).json({
             message: 'Internal server error!',
+        });
+    }
+};
+
+const changePassword = async (req, res) => {
+    const { email, password } = req.body;
+
+    try {
+        const salt = await bcrypt.genSalt(10);
+        const hashPassword = await bcrypt.hash(password, salt);
+        await updatePassword(email, hashPassword);
+        return res.status(200).json({
+            message: 'Change password successfully!',
+        });
+    } catch (error) {
+        return res.status(500).json({
+            message: 'Cant not change password!',
         });
     }
 };
@@ -316,4 +445,7 @@ export default {
     refreshToken,
     sendOTP,
     verifyAccount,
+    forgotPassword,
+    changePassword,
+    resetPassword,
 };
