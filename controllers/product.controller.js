@@ -59,11 +59,13 @@ const getProduct = async (req, res) => {
 
         if (!findProduct) {
             return res.status(404).json({
+                status: false,
                 message: 'Product not found!',
             });
         }
 
         return res.status(200).json({
+            status: true,
             message: 'Get product successfully!',
             data: findProduct,
         });
