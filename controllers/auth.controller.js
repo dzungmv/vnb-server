@@ -145,7 +145,6 @@ const signIn = async (req, res) => {
             },
         });
     } catch (error) {
-        console.error('Error', error);
         return res.status(500).json({
             message: 'Internal server!',
         });
@@ -352,7 +351,7 @@ const resetPassword = async (req, res) => {
         const salt = await bcrypt.genSalt(10);
         const hashPassword = await bcrypt.hash(password, salt);
 
-        const test = await updatePassword(email, hashPassword);
+        await updatePassword(email, hashPassword);
 
         return res.status(200).json({
             message: 'Reset password successfully!',

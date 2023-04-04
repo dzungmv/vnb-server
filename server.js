@@ -1,21 +1,12 @@
-import express from 'express';
 import * as dotenv from 'dotenv';
-import mongoose from 'mongoose';
+import express from 'express';
 import helmet from 'helmet';
-import http from 'http';
-import { Server } from 'socket.io';
+import mongoose from 'mongoose';
 
-import AdminAPIRoute from './routes/routes.js';
+import PrivateRoute from './routes/private.route.js';
+import PublicRoute from './routes/public.route.js';
 
 const app = express();
-
-const server = http.createServer(app);
-
-const io = new Server(server, {
-    cors: {
-        origin: '*',
-    },
-});
 
 dotenv.config();
 
@@ -46,7 +37,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 // routes
-AdminAPIRoute(app);
+PublicRoute(app);
+PrivateRoute(app);
 
 // start server
 mongoose.set('strictQuery', false);
@@ -59,11 +51,5 @@ mongoose
         console.log('Connected to database!');
         app.listen(PORT, () => {
             console.log(`Server is listening on port ${PORT}`);
-        });
-        io.on('connection', (socket) => {
-            console.log('a user connected');
-            socket.on('disconnect', () => {
-                console.log('user disconnected');
-            });
         });
     });
