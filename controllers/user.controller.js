@@ -56,4 +56,15 @@ const getCart = async (req, res) => {
     }
 };
 
+const checkout = async (req, res) => {
+    const { cart } = req.body;
+    const userId = req.headers[CLIENT_ID];
+
+    try {
+        const findProductById = async (id) => {
+            return await ProductModel.findById(id).lean();
+        };
+    } catch (error) {}
+};
+
 export default { addCart, getCart };
