@@ -25,6 +25,7 @@ const PrivateRoute = (app) => {
     router.post('/auth/change-password', AuthController.changePassword);
     router.post('/auth/logout', AuthController.signOut);
     router.post('/auth/refresh-token', AuthController.refreshToken);
+    router.post('/user/checkout', UserController.checkout);
 
     return app.use('/api/vnb/v1', router);
 };

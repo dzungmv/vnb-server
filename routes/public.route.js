@@ -13,8 +13,6 @@ const PublicRoute = (app) => {
     router.post('/auth/reset-password', AuthController.resetPassword);
     router.post('/auth/send-otp', AuthController.sendOTP);
 
-    // router.post('/user/checkout', UserController.checkout);
-
     return app.use('/api/vnb/v1', router);
 };
 
