@@ -37,16 +37,9 @@ const ProductSchema = new mongoose.Schema(
         endows: {
             type: [String],
         },
-        sizes: {
-            type: [],
-            size_name: {
-                type: String,
-                required: true,
-            },
-            quantity: {
-                type: Number,
-                required: true,
-            },
+        quantity: {
+            type: Number,
+            required: true,
         },
         stores: {
             type: [String],

@@ -47,22 +47,44 @@ const findCartByUserId = async (userId) => {
 };
 
 const addToCart = async ({ userId, product }) => {
-    // if product have name same size, update quantity of product instead of push new product
-    const cart = await CartModel.findOne({ user: userId });
-    if (cart) {
-        const index = cart.products.findIndex(
-            (item) =>
-                item.product_name === product.product_name &&
-                item.product_size.size_name === product.product_size.size_name
+    const findUserCart = await CartModel.findOne({ user: userId });
+
+    if (findUserCart) {
+        const findProduct = findUserCart.products.find(
+            (item) => item.productId == product.productId
         );
-        if (index !== -1) {
-            cart.products[index].product_size.quantity =
-                cart.products[index].product_size.quantity +
-                product.product_size.quantity;
-            const filters = { user: userId },
-                update = { $set: { products: cart.products } },
-                options = { upsert: true, new: true };
-            return await CartModel.findOneAndUpdate(filters, update, options);
+
+        if (findProduct) {
+            const updateProduct = await CartModel.findOneAndUpdate(
+                {
+                    user: userId,
+                    'products.productId': product.productId,
+                },
+                {
+                    $set: {
+                        'products.$.product_quantity': product.product_quantity,
+                    },
+                },
+                {
+                    new: true,
+                }
+            );
+
+            return updateProduct;
+        } else {
+            const updateCart = await CartModel.findOneAndUpdate(
+                {
+                    user: userId,
+                },
+                {
+                    $push: { products: product },
+                },
+                {
+                    new: true,
+                }
+            );
+
+            return updateCart;
         }
     }
     const filters = { user: userId },
