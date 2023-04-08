@@ -19,13 +19,14 @@ const PrivateRoute = (app) => {
 
     router.post('/user/add-cart', UserController.addCart);
     router.get('/user/get-cart', UserController.getCart);
+    router.post('/user/checkout', UserController.checkout);
+    router.post('/user/order', UserController.order);
 
     router.post('/auth/send-otp', AuthController.sendOTP);
     router.post('/auth/verify-account', AuthController.verifyAccount);
     router.post('/auth/change-password', AuthController.changePassword);
     router.post('/auth/logout', AuthController.signOut);
     router.post('/auth/refresh-token', AuthController.refreshToken);
-    router.post('/user/checkout', UserController.checkout);
 
     return app.use('/api/vnb/v1', router);
 };

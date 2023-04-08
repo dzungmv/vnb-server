@@ -1,6 +1,10 @@
-import mongoose from 'mongoose';
 import ProductModel from '../models/product.model.js';
-import { addToCart, findCartByUserId } from '../services/user.service.js';
+import {
+    addToCart,
+    createOrder,
+    findCartByUserId,
+    removeFromCart,
+} from '../services/user.service.js';
 
 const CLIENT_ID = 'x-client-id';
 
@@ -56,8 +60,6 @@ const addCart = async (req, res) => {
 const checkout = async (req, res) => {
     const { cart } = req.body;
 
-    const userId = req.headers[CLIENT_ID];
-
     try {
         const productID = cart.map((item) => item.productId);
 
@@ -67,7 +69,7 @@ const checkout = async (req, res) => {
 
         let realStock = [];
 
-        const isOutOfStock = cart.filter((item) => {
+        cart.forEach((item) => {
             const isOutQuantity = products.filter((product) => {
                 return (
                     product._id.toString() === item.productId.toString() &&
@@ -84,11 +86,9 @@ const checkout = async (req, res) => {
                     });
                 });
             }
-
-            return isOutQuantity;
         });
 
-        if (isOutOfStock.length > 0) {
+        if (realStock && realStock.length > 0) {
             return res.status(400).json({
                 success: false,
                 message: 'Products has outstock!',
@@ -99,6 +99,7 @@ const checkout = async (req, res) => {
 
         return res.status(200).json({
             success: true,
+            message: 'Checkout successfully',
         });
     } catch (error) {
         console.error(error);
@@ -109,4 +110,35 @@ const checkout = async (req, res) => {
     }
 };
 
-export default { addCart, getCart, checkout };
+const order = async (req, res) => {
+    const { data } = req.body;
+    const userId = req.headers[CLIENT_ID];
+
+    console.log('Check payload >>>', data);
+
+    try {
+        const order = await createOrder({ userId, data });
+
+        if (!order) {
+            return res.status(400).json({
+                success: false,
+                message: 'Create order failed',
+            });
+        }
+
+        await removeFromCart(userId);
+
+        return res.status(200).json({
+            success: true,
+            message: 'Create order successfully',
+        });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({
+            success: false,
+            message: 'Internal server error',
+        });
+    }
+};
+
+export default { addCart, getCart, checkout, order };

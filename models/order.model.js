@@ -4,7 +4,7 @@ const COLLECTION_NAME = 'Orders';
 
 const OrderSchema = new mongoose.Schema(
     {
-        userId: {
+        user: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'User',
         },
@@ -27,16 +27,14 @@ const OrderSchema = new mongoose.Schema(
                     type: Number,
                 },
 
-                product_size: {
-                    size_name: {
-                        type: String,
-                    },
-                    quantity: {
-                        type: Number,
-                    },
+                product_quantity: {
+                    type: Number,
                 },
             },
         ],
+        fullname: {
+            type: String,
+        },
         address: {
             type: String,
         },
@@ -56,13 +54,13 @@ const OrderSchema = new mongoose.Schema(
             enum: ['cod', 'banking'],
             default: 'cod',
         },
-        payment_status: {
-            type: String,
-            enum: ['pending', 'success', 'failed'],
-        },
     },
     {
         timestamps: true,
         collection: COLLECTION_NAME,
     }
 );
+
+const OrderModel = mongoose.model('Order', OrderSchema);
+
+export default OrderModel;
