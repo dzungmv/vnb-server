@@ -51,19 +51,16 @@ const addToCart = async ({ userId, product }) => {
     const findUserCart = await CartModel.findOne({ user: userId });
 
     if (findUserCart) {
-        return await CartModel.findOneAndUpdate(
-            {
-                user: userId,
-            },
-            {
-                $set: {
-                    products: product,
-                },
-            },
-            {
-                new: true,
-            }
+        const findProduct = findUserCart.products.find(
+            (item) => item.productId.toString() == product.productId
         );
+
+        if (findProduct) {
+            const index = findUserCart.products.indexOf(findProduct);
+            findUserCart.products[index].product_quantity +=
+                product.product_quantity;
+            return await findUserCart.save();
+        }
     }
     const filters = { user: userId },
         update = { $push: { products: product } },
@@ -80,24 +77,32 @@ const findOrderByUserId = async (userId) => {
 };
 
 const createOrder = async ({ userId, data }) => {
-    const { fullname, address, phone, cart, total, payment } = data;
+    const { fullname, address, phone, products, total, payment } = data;
     return await OrderModel.findOneAndUpdate(
         {
             user: userId,
         },
         {
-            fullname: fullname,
-            address: address,
-            phone: phone,
-            payment: payment,
-            $push: { products: cart },
-            total: total,
+            $push: {
+                orders: {
+                    products,
+                    fullname,
+                    address,
+                    phone,
+                    total,
+                    payment,
+                },
+            },
         },
         {
             new: true,
             upsert: true,
         }
     );
+};
+
+const getOrdersByUserId = async (userId) => {
+    return await OrderModel.findOne({ user: userId }).lean();
 };
 
 export {
@@ -109,4 +114,5 @@ export {
     findOrderByUserId,
     createOrder,
     removeFromCart,
+    getOrdersByUserId,
 };

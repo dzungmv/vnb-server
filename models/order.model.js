@@ -2,12 +2,8 @@ import mongoose from 'mongoose';
 
 const COLLECTION_NAME = 'Orders';
 
-const OrderSchema = new mongoose.Schema(
+const Orders = new mongoose.Schema(
     {
-        user: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'User',
-        },
         products: [
             {
                 productId: {
@@ -54,6 +50,23 @@ const OrderSchema = new mongoose.Schema(
             enum: ['cod', 'banking'],
             default: 'cod',
         },
+    },
+    {
+        timestamps: true,
+    }
+);
+
+const OrderSchema = new mongoose.Schema(
+    {
+        user: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User',
+        },
+        orders: [
+            {
+                type: Orders,
+            },
+        ],
     },
     {
         timestamps: true,

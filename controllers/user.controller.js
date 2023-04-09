@@ -3,6 +3,7 @@ import {
     addToCart,
     createOrder,
     findCartByUserId,
+    getOrdersByUserId,
     removeFromCart,
 } from '../services/user.service.js';
 
@@ -141,4 +142,28 @@ const order = async (req, res) => {
     }
 };
 
-export default { addCart, getCart, checkout, order };
+const getOrder = async (req, res) => {
+    const userId = req.headers[CLIENT_ID];
+    try {
+        const getOrder = await getOrdersByUserId(userId);
+        if (!getOrder) {
+            return res.status(400).json({
+                success: false,
+                message: 'Get order failed',
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: 'Get order successfully',
+            data: getOrder,
+        });
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: 'Internal server error',
+        });
+    }
+};
+
+export default { addCart, getCart, checkout, order, getOrder };

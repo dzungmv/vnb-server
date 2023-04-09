@@ -17,8 +17,9 @@ const PrivateRoute = (app) => {
         ProductController.deleteProduct
     );
 
-    router.post('/user/add-cart', UserController.addCart);
     router.get('/user/get-cart', UserController.getCart);
+    router.get('/user/get-order', UserController.getOrder);
+    router.post('/user/add-cart', UserController.addCart);
     router.post('/user/checkout', UserController.checkout);
     router.post('/user/order', UserController.order);
 
