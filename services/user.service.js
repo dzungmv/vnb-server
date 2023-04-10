@@ -105,6 +105,27 @@ const getOrdersByUserId = async (userId) => {
     return await OrderModel.findOne({ user: userId }).lean();
 };
 
+const updateOrderByUserId = async (userId, orderId, status) => {
+    return await OrderModel.findOneAndUpdate(
+        {
+            user: userId,
+        },
+        {
+            $set: {
+                'orders.$[order].status': status,
+            },
+        },
+        {
+            arrayFilters: [
+                {
+                    'order._id': new mongoose.Types.ObjectId(orderId),
+                },
+            ],
+            new: true,
+        }
+    );
+};
+
 export {
     findByEmail,
     verifyByEmail,
@@ -115,4 +136,5 @@ export {
     createOrder,
     removeFromCart,
     getOrdersByUserId,
+    updateOrderByUserId,
 };

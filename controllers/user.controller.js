@@ -3,11 +3,18 @@ import {
     addToCart,
     createOrder,
     findCartByUserId,
+    findOrderByUserId,
     getOrdersByUserId,
     removeFromCart,
+    updateOrderByUserId,
 } from '../services/user.service.js';
 
 const CLIENT_ID = 'x-client-id';
+const ORDER_STATUS = {
+    SHIPPING: 'shipping',
+    COMPLETED: 'completed',
+    CANCELLED: 'cancelled',
+};
 
 const getCart = async (req, res) => {
     const userId = req.headers[CLIENT_ID];
@@ -166,4 +173,48 @@ const getOrder = async (req, res) => {
     }
 };
 
-export default { addCart, getCart, checkout, order, getOrder };
+const updateOrder = async (req, res) => {
+    const userId = req.headers[CLIENT_ID];
+    const { orderId, status } = req.body;
+
+    console.log('Check payload >>>', orderId, status, userId);
+
+    try {
+        const userOrder = await findOrderByUserId(userId);
+
+        if (!userOrder) {
+            return res.status(400).json({
+                success: false,
+                message: 'User not have any order',
+            });
+        }
+
+        const updatingOrder = await updateOrderByUserId(
+            userId,
+            orderId,
+            status
+        );
+
+        if (!updatingOrder) {
+            return res.status(400).json({
+                success: false,
+                message: 'Update order failed',
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: 'Update order successfully',
+        });
+    } catch (error) {}
+
+    return res.status(200).json({
+        message: 'Update status order successfully',
+    });
+    // try {
+
+    //     const order = await OrderModel.findOneAndUpdate()
+    // } catch (error) {}
+};
+
+export default { addCart, getCart, checkout, order, getOrder, updateOrder };
