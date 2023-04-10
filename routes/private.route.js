@@ -33,7 +33,7 @@ const PrivateRoute = (app) => {
 
     // Admin route
     router.get('/admin/get-all-users', AdminController.getAllUsers);
-    router.get('/admin/get-all-order', AdminController.getAllOrder);
+    router.get('/admin/get-all-orders', AdminController.getAllOrder);
 
     return app.use('/api/vnb/v1', router);
 };
