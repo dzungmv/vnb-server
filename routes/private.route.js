@@ -34,6 +34,7 @@ const PrivateRoute = (app) => {
     // Admin route
     router.get('/admin/get-all-users', AdminController.getAllUsers);
     router.get('/admin/get-all-orders', AdminController.getAllOrder);
+    router.put('/admin/update-order/:id', AdminController.updateOrder);
 
     return app.use('/api/vnb/v1', router);
 };
