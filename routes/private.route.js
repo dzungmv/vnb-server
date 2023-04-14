@@ -32,9 +32,10 @@ const PrivateRoute = (app) => {
     router.post('/auth/refresh-token', AuthController.refreshToken);
 
     // Admin route
-    router.get('/admin/get-all-users', AdminController.getAllUsers);
     router.get('/admin/get-all-orders', AdminController.getAllOrder);
+    router.get('/admin/get-statistical', AdminController.getStatistical);
     router.patch('/admin/update-order/:id', AdminController.updateOrder);
+    router.post('/admin/create-order', AdminController.createOrders);
 
     return app.use('/api/vnb/v1', router);
 };

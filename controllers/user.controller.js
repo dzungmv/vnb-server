@@ -10,11 +10,6 @@ import {
 } from '../services/user.service.js';
 
 const CLIENT_ID = 'x-client-id';
-const ORDER_STATUS = {
-    SHIPPING: 'shipping',
-    COMPLETED: 'completed',
-    CANCELLED: 'cancelled',
-};
 
 const getCart = async (req, res) => {
     const userId = req.headers[CLIENT_ID];
@@ -176,8 +171,6 @@ const getOrder = async (req, res) => {
 const updateOrder = async (req, res) => {
     const userId = req.headers[CLIENT_ID];
     const { orderId, status } = req.body;
-
-    console.log('Check payload >>>', orderId, status, userId);
 
     try {
         const userOrder = await findOrderByUserId(userId);

@@ -78,6 +78,7 @@ const findOrderByUserId = async (userId) => {
 
 const createOrder = async ({ userId, data }) => {
     const { fullname, address, phone, products, total, payment } = data;
+
     return await OrderModel.findOneAndUpdate(
         {
             user: userId,

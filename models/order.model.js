@@ -47,7 +47,7 @@ const Orders = new mongoose.Schema(
         },
         payment: {
             type: String,
-            enum: ['cod', 'banking'],
+            enum: ['cod', 'banking', 'cash'],
             default: 'cod',
         },
     },
