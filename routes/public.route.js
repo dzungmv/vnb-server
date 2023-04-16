@@ -1,11 +1,10 @@
 import express from 'express';
-import UserController from '../controllers/user.controller.js';
 import AuthController from '../controllers/auth.controller.js';
 import ProductController from '../controllers/product.controller.js';
 
 const router = express.Router();
 const PublicRoute = (app) => {
-    router.get('/product/get-all-product', ProductController.getAllProduct);
+    router.get('/product/get-products', ProductController.getAllProduct);
     router.get('/product/get-product/:slug', ProductController.getProduct);
     router.post('/auth/register', AuthController.signUp);
     router.post('/auth/login', AuthController.signIn);
