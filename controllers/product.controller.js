@@ -2,6 +2,7 @@ import ProductModel from '../models/product.model.js';
 import {
     deleteProductById,
     getProductBySlug,
+    search,
     updateProductById,
 } from '../services/product.service.js';
 
@@ -76,6 +77,8 @@ const getAllProduct = async (req, res) => {
             ? req.query.sort
             : SORT_BY.UPDATED_AT_DESC;
     const price = req.query.price;
+    let type =
+        req.query.type && req.query.type.length > 0 ? req.query.type : 'all';
     let brand =
         req.query.brand && req.query.brand.length > 0 ? req.query.brand : 'all';
     let stores =
@@ -92,6 +95,17 @@ const getAllProduct = async (req, res) => {
             let sortBy = sort;
             let query = {};
             let filterByPrice = {};
+
+            const typeOptions = [
+                'racket',
+                'shoes',
+                'shirt',
+                'skirt',
+                'pant',
+                'bag',
+                'balo',
+                'accessories',
+            ];
 
             const brandOptions = [
                 'VNB',
@@ -115,6 +129,10 @@ const getAllProduct = async (req, res) => {
                 'VNB 11 District',
                 'VNB 12 District',
             ];
+
+            type === 'all'
+                ? (type = [...typeOptions])
+                : (type = req.query.type.split(','));
 
             stores === 'all'
                 ? (stores = [...storeOptions])
@@ -169,6 +187,8 @@ const getAllProduct = async (req, res) => {
 
             const products = await ProductModel.find(query)
                 .lean()
+                .where('type')
+                .in([...type])
                 .where('stores')
                 .in([...stores])
                 .where('brand')
@@ -278,10 +298,40 @@ const deleteProduct = async (req, res) => {
     }
 };
 
+const searchProduct = async (req, res) => {
+    const { keyword } = req.body;
+
+    try {
+        const products = await search(keyword);
+
+        if (products && products.length > 0) {
+            const limitProduct = products.slice(0, 5);
+
+            return res.status(200).json({
+                status: true,
+                message: 'Get products successfully!',
+                data: limitProduct,
+            });
+        }
+
+        return res.status(404).json({
+            status: false,
+            message: 'Products not found!',
+        });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({
+            message: 'Internal server!',
+            error: error,
+        });
+    }
+};
+
 export default {
     addProduct,
     getAllProduct,
     getProduct,
+    searchProduct,
     updateProduct,
     deleteProduct,
 };

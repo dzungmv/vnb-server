@@ -18,9 +18,19 @@ const deleteProductById = async (id) => {
     return await ProductModel.findByIdAndDelete(id);
 };
 
+const search = async (keyword) => {
+    return await ProductModel.find({
+        name: {
+            $regex: keyword,
+            $options: 'i',
+        },
+    });
+};
+
 export {
     findProductById,
     getProductBySlug,
     updateProductById,
     deleteProductById,
+    search,
 };

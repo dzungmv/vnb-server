@@ -6,6 +6,7 @@ const router = express.Router();
 const PublicRoute = (app) => {
     router.get('/product/get-products', ProductController.getAllProduct);
     router.get('/product/get-product/:slug', ProductController.getProduct);
+    router.post('/product/search-products', ProductController.searchProduct);
     router.post('/auth/register', AuthController.signUp);
     router.post('/auth/login', AuthController.signIn);
     router.post('/auth/forgot-password', AuthController.forgotPassword);

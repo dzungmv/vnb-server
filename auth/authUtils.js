@@ -90,7 +90,10 @@ const authenticate = asyncHandler(async (req, res, next) => {
             req.keyStore = keyStore;
             return next();
         } catch (error) {
-            throw new Error('Unauthorized!');
+            return res.status(401).json({
+                status: false,
+                message: 'Unauthorized!',
+            });
         }
     } catch (error) {
         next(error);
