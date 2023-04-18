@@ -86,8 +86,6 @@ const getAllProduct = async (req, res) => {
             ? req.query.stores
             : 'all';
 
-    console.log('Request Query: ', req.query);
-
     try {
         if (page) {
             const skip = (page - 1) * limit;

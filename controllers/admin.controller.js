@@ -33,8 +33,6 @@ const updateOrder = async (req, res) => {
 
         const order = await updateOrderByOrdersId(id, status, total);
 
-        // console.log(order);
-
         return res.status(200).json({
             success: true,
             message: 'Update order successfully',

@@ -117,8 +117,6 @@ const order = async (req, res) => {
     const { data } = req.body;
     const userId = req.headers[CLIENT_ID];
 
-    console.log('Check payload >>>', data);
-
     try {
         const order = await createOrder({ userId, data });
 

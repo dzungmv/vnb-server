@@ -79,7 +79,6 @@ const updateOrderByOrdersId = async (orderId, status, total) => {
     }
 
     if (status === 'completed') {
-        console.log('check>>>>>', total);
         //    sum total of order to revenue
         await RevenueModel.findOneAndUpdate(
             {
