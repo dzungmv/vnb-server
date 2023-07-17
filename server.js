@@ -3,12 +3,28 @@ import express from 'express';
 import helmet from 'helmet';
 import mongoose from 'mongoose';
 
+import swaggerJsdoc from 'swagger-jsdoc';
+import swaggerUi from 'swagger-ui-express';
+
 import PrivateRoute from './routes/private.route.js';
 import PublicRoute from './routes/public.route.js';
 
 const app = express();
 
 dotenv.config();
+
+const options = {
+    definition: {
+        openapi: '3.0.0',
+        info: {
+            title: 'API Documentation',
+            version: '1.0.0',
+        },
+    },
+    apis: ['./routes/*.js'], // Thay đổi đường dẫn tới các file router của bạn
+};
+
+const specs = swaggerJsdoc(options);
 
 const PORT = process.env.PORT || 3000;
 
@@ -35,6 +51,14 @@ app.use((req, res, next) => {
 // middleware body-parser
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+
+app.use('/api-docs', swaggerUi.serve);
+app.get(
+    '/api-docs',
+    swaggerUi.setup(specs, {
+        explorer: true,
+    })
+);
 
 // routes
 PublicRoute(app);
