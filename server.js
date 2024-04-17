@@ -7,7 +7,7 @@ import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 
 import PrivateRoute from './routes/private.route.js';
-import PublicRoute from './routes/public.route.js';
+import PublicRoute from './routes/public.route.js'
 
 const app = express();
 
