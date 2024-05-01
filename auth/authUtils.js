@@ -88,7 +88,7 @@ const authenticate = asyncHandler(async (req, res, next) => {
             }
 
             req.keyStore = keyStore;
-            return next();
+            return next()
         } catch (error) {
             return res.status(401).json({
                 status: false,
