@@ -2,7 +2,7 @@
 import jwt from 'jsonwebtoken';
 
 import asyncHandler from '../helpers/asyncHandler.js';
-import { findById } from '../services/keyToken.service.js';
+import { findById } from '../services/keyToken.service.js'
 
 const HEADERS = {
     AUTHORIZATION: 'authorization',
