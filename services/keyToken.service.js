@@ -9,7 +9,7 @@ const createToken = async ({ userId, publicKey, privateKey, refreshToken }) => {
             update = {
                 publicKey,
                 privateKey,
-                refreshTokensUsed: [],
+                refreshTokensUsed: []
                 refreshToken,
             },
             option = {
