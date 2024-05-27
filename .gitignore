@@ -1,1 +1,3 @@
-node_mod
+node_modules
+
+// Simple .gitignore
