@@ -8,7 +8,7 @@ export const sendEmail = async ({ to, subject, htmlContent }) => {
         secure: false, // true for 465, false for other ports
         auth: {
             user: process.env.MAIL_USERNAME, // generated ethereal user
-            pass: process.env.MAIL_PASSWORD, // generated ethereal password
+            pass: process.env.MAIL_PASSWORD, // generated etherealpassword
         },
     });
 
